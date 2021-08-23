@@ -46,8 +46,10 @@ func (c *Cache) GetStash(key interface{}) *Stash {
 	if c.find != nil {
 		res := c.find(key)
 		if res != nil {
-			c.UpsertValue(key, res)
-			return res
+			stash := NewStash(res).Now()
+			c.UpsertStash(key, stash)
+
+			return stash
 		}
 	}
 
