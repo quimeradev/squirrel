@@ -26,3 +26,7 @@ func (s *Stash) CreatedAt(t time.Time) *Stash {
 	s.status.creation = t
 	return s
 }
+
+func (s *Stash) GetCreationTime(t time.Time) time.Time {
+	return s.status.creation
+}

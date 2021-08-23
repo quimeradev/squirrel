@@ -29,7 +29,7 @@ func (c *Cache) UpsertStash(key interface{}, s *Stash) {
 	c.stashes[key] = s
 }
 
-func (c *Cache) Get(key interface{}) interface{} {
+func (c *Cache) GetStash(key interface{}) *Stash {
 	// Don't use a defer here, since c.UpsertValue might need the lock before the end of the func
 	c.lock.RLock()
 
@@ -37,7 +37,7 @@ func (c *Cache) Get(key interface{}) interface{} {
 	stash, found := c.stashes[key]
 	if found {
 		c.lock.RUnlock()
-		return stash.val
+		return stash
 	}
 
 	c.lock.RUnlock()
@@ -53,6 +53,35 @@ func (c *Cache) Get(key interface{}) interface{} {
 
 	// Not found anywhere
 	return nil
+}
+
+func (c *Cache) Get(key interface{}) interface{} {
+	return c.GetStash(key).val
+}
+
+func (c *Cache) SearchStash(searchFunc func(interface{}) bool) []*Stash {
+	c.lock.RLock()
+	defer c.lock.RUnlock()
+
+	var results []*Stash
+	for _, s := range c.stashes {
+		if searchFunc(s.val) {
+			results = append(results, s)
+		}
+	}
+
+	return results
+}
+
+func (c *Cache) Search(searchFunc func(interface{}) bool) interface{} {
+	results := c.SearchStash(searchFunc)
+
+	var resultsVals []interface{}
+	for _, s := range results {
+		resultsVals = append(resultsVals, s.val)
+	}
+
+	return resultsVals
 }
 
 func (c *Cache) UpdateIfNewer(key interface{}, s *Stash) {
