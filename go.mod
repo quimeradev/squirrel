@@ -1,0 +1,1 @@
+module quimera.dev/squirrel
