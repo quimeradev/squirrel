@@ -12,7 +12,7 @@ type Cache struct {
 }
 
 func NewCache() *Cache {
-	return &Cache{}
+	return &Cache{stashes: make(map[interface{}]*Stash)}
 }
 
 func (c *Cache) UpsertValue(key interface{}, val interface{}) {
