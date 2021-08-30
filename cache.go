@@ -8,7 +8,7 @@ type Cache struct {
 	stashes map[interface{}]*Stash
 	lock sync.RWMutex
 
-	find func(key interface{}) interface{}
+	Find func(key interface{}) interface{}
 }
 
 func NewCache() *Cache {
@@ -33,7 +33,7 @@ func (c *Cache) GetStash(key interface{}) *Stash {
 	// Don't use a defer here, since c.UpsertValue might need the lock before the end of the func
 	c.lock.RLock()
 
-	// Try to find it in direct cache
+	// Try to Find it in direct cache
 	stash, found := c.stashes[key]
 	if found {
 		c.lock.RUnlock()
@@ -42,9 +42,9 @@ func (c *Cache) GetStash(key interface{}) *Stash {
 
 	c.lock.RUnlock()
 
-	// Not in the cache. If find is set we use it to search for the value
-	if c.find != nil {
-		res := c.find(key)
+	// Not in the cache. If Find is set we use it to search for the value
+	if c.Find != nil {
+		res := c.Find(key)
 		if res != nil {
 			stash := NewStash(res).Now()
 			c.UpsertStash(key, stash)
@@ -90,7 +90,7 @@ func (c *Cache) UpdateIfNewer(key interface{}, s *Stash) {
 	// Don't use a defer here, since c.UpsertStash might need the lock before the end of the func
 	c.lock.RLock()
 
-	// We avoid the Get function since we don't want to fall back to the c.find call
+	// We avoid the Get function since we don't want to fall back to the c.Find call
 	current, found := c.stashes[key]
 
 	c.lock.RUnlock()
