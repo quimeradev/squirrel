@@ -75,7 +75,7 @@ func (c *Cache) SearchStash(searchFunc func(interface{}) bool) []*Stash {
 	return results
 }
 
-func (c *Cache) Search(searchFunc func(interface{}) bool) interface{} {
+func (c *Cache) Search(searchFunc func(interface{}) bool) []interface{} {
 	results := c.SearchStash(searchFunc)
 
 	var resultsVals []interface{}
