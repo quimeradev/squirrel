@@ -58,7 +58,12 @@ func (c *Cache) GetStash(key interface{}) *Stash {
 }
 
 func (c *Cache) Get(key interface{}) interface{} {
-	return c.GetStash(key).val
+	res := c.GetStash(key)
+	if res != nil {
+		return res.val
+	}
+
+	return nil
 }
 
 func (c *Cache) SearchStash(searchFunc func(interface{}) bool) []*Stash {
